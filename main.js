@@ -14,24 +14,35 @@ document.body.appendChild(renderer.domElement);
 
 const earthGroup = new THREE.Group();
 earthGroup.rotation.z = -23.4 * Math.PI / 180; //earth axial tilt
+scene.add(earthGroup)
 
 new OrbitControls(camera, renderer.domElement)
 
 const loader = new THREE.TextureLoader();
 const geometry = new THREE.IcosahedronGeometry(1, 12);
+
 const material = new THREE.MeshStandardMaterial({
    map: loader.load('./images/earthmap1k.jpg')
 });
-
 const earthMash = new THREE.Mesh(geometry, material);
-earthGroup.add( earthMash );
+earthGroup.add(earthMash); 
 
-const lightMaterial = new THREE.MeshStandardMaterial({
-    map: loader.load('./images/earthlights1k.jpg')
+const lightMaterial = new THREE.MeshBasicMaterial({
+    map: loader.load('./images/earthlights1k.jpg'),
+  blending:THREE.AdditiveBlending,
  });
-
  const lightMesh = new THREE.Mesh(geometry, lightMaterial);
  earthGroup.add(lightMesh);
+
+ const cloudMaterial = new THREE.MeshStandardMaterial({
+   map: loader.load('./images/earthcloudmaptrans.jpg'),
+   transparent: true,
+  opacity: 0.8,
+   blending:THREE.AdditiveBlending,
+});
+const cloudMash = new THREE.Mesh(geometry, cloudMaterial);
+cloudMash.scale.setScalar(1.003);
+earthGroup.add(cloudMash);
 
 // const light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
 // scene.add( light );
@@ -42,9 +53,10 @@ scene.add(sunLight);
 
 function animate() {
 
-    // earthMash.rotation.x += 0.02;
     earthMash.rotation.y += 0.001;
-    
+    lightMesh.rotation.y += 0.001;
+    cloudMash.rotation.y += 0.001;
+
     	renderer.render( scene, camera );
     }
     renderer.setAnimationLoop( animate );
